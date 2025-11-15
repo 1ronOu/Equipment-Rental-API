@@ -9,4 +9,4 @@ class Product(Base):
 
 	name: Mapped[str] = mapped_column(String(30))
 	price: Mapped[Optional[int]]
-	desription: Mapped[str] = mapped_column(String(30))
+	description: Mapped[str] = mapped_column(String(30))
