@@ -1,0 +1,22 @@
+FROM python:3.13.9-bookworm
+
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /code
+
+RUN pip install --upgrade pip wheel
+
+COPY ./requirements.txt /code/requirements.txt
+
+RUN pip install -r /code/requirements.txt
+
+COPY . /code
+
+ENV PYTHONPATH="${PYTHONPATH}:/code"
+
+RUN chmod +x app/prestart.sh
+
+
+ENTRYPOINT ["app/prestart.sh"]
+CMD ["python", "app/main.py"]
