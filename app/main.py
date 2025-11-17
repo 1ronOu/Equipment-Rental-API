@@ -1,4 +1,5 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Query
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 import uvicorn
 import redis
@@ -6,8 +7,11 @@ from redis import Redis
 import httpx
 import json
 
+from sqlalchemy.util.preloaded import engine_url
+
 from app.core.config import settings
-from app.models.product import Product
+from app.routers.user_router import router as user_router
+from app.routers.equipment_router import router as equipment_router
 
 from contextlib import asynccontextmanager
 
@@ -23,6 +27,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.include_router(user_router)
+app.include_router(equipment_router)
+
 @app.get('/')
 async def root():
 	return {"msg": settings}
@@ -30,13 +37,6 @@ async def root():
 
 @app.get('/entries')
 async def read_item():
-	# value = app.state.redis.get('entries')
-	# if value is None:
-	# 	value = 'qwe'
-	# 	app.state.redis.set('entries', value)
-	# 	return {"msg": 'redis didnt do anything'}
-	# else:
-	# 	return {'msg': 'redis did it job', 'redis_response': value}
 	r = Redis(host=settings.redis_host, port=settings.redis_port, db=0, username='qwe', password='qwe')
 	try:
 		info = r.info()
@@ -48,16 +48,6 @@ async def read_item():
 			print("No success")
 	except redis.exceptions.RedisError as e:
 		print(f'error: {e}')
-
-
-@app.post('/qwe')
-async def index(name: str, price: int, description: str, db: AsyncSession = Depends(get_db)):
-	db_user = Product(name=name, price=price, description=description)
-	db.add(db_user)
-	await db.commit()
-	await db.refresh(db_user)
-	return db_user
-
 
 
 if __name__ == '__main__':
