@@ -3,7 +3,7 @@ from app.core.config import settings
 from app.models.base import Base
 
 engine = create_async_engine(settings.database_url, connect_args={"ssl": None})
-SessionLocal = async_sessionmaker(engine)
+SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def get_db():
