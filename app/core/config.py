@@ -9,6 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 class AuthJWT(BaseSettings):
 	private_key_path: Path = BASE_DIR / 'certs' / 'jwt_private.pem'
 	public_key_path: Path = BASE_DIR / 'certs' / 'jwt_public.pem'
+	algorithm: str = 'RS256'
 
 
 class Settings(BaseSettings):
